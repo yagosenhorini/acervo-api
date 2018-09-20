@@ -1,0 +1,28 @@
+{
+  "name": "acervo-api",
+  "version": "1.0.0",
+  "main": "server.js",
+  "author": "Yago Senhorini",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon ./server.js --exec babel-node --presets babel-preset-env",
+    "build": "./node_modules/.bin/babel src -d dist"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "debug": "^3.1.0",
+    "express": "^4.16.3",
+    "mongoose": "^5.2.9"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "nodemon": "^1.18.3"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  }
+}
