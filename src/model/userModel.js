@@ -1,64 +1,51 @@
 import mongoose from 'mongoose'
-import httpStatus from 'http-status'
-import passportLocalMongoose from 'passport-local-mongoose'
-import APIError from '../helpers/APIError'
+import bcrypt from 'bcrypt'
 
-const UserSchema = new mongoose.Schema({
-    email:{
+const Schema = mongoose.Schema
+
+const userSchema = Schema({
+
+    username: {
         type: String,
-        unique: true
+        index: true
     },
-    push:{
+    password: {
         type: String,
-        unique: true
     },
-    createdOn:{
-        type: Date,
-        default: Date.now
+    email: {
+        type: String
     },
-    role:{
-        type: String,
-        enum: ['user', 'agent', 'admin'], default: 'user'
+    name: {
+        type: String
+    },
+    points: {
+        type: Number
     }
-})
+});
+const User = mongoose.model('acervo-user', userSchema);
+export default User
 
-UserSchema.method({})
-
-UserSchema.static = {
-    /**
-   * Get user
-   * @param {ObjectId} id - The objectId of user.
-   * @returns {Promise<User, APIError>}
-   */
-
-   get(id){
-       return this.findById(id)
-       .exec()
-       .then(user =>{
-           if(user){
-               return user
-           }
-           const err = new APIError('Usuário não encontrado', httpStatus.NOT_FOUND)
-           return Promise.reject(err)
-       })
-   },
-
-   /**
-   * List users in descending order of 'createdAt' timestamp.
-   * @param {number} skip - Number of users to be skipped.
-   * @param {number} limit - Limit number of users to be returned.
-   * @returns {Promise<User[]>}
-   */
-
-   list({skip=0, limit=50}={}){
-       return this.find()
-       .sort({createdOn: -1})
-       .skip(skip)
-       .limit(limit)
-       .exec()
-   },
+export function createUser(newUser, callback) {
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+            newUser.password = hash
+            newUser.save(callback)
+        })
+    })
 }
 
-UserSchema.plugin(passportLocalMongoose, {username: 'email'})
-
-export default mongoose.model('User', UserSchema)
+export function getUserByUsername (username, callback){
+    let query = {username: username};
+    User.findOne(query, callback);
+  }
+  
+  export function getUserById (id, callback){
+    User.findById(id, callback);
+  }
+  
+  export function comparePassword (candidatePassword, hash, callback){
+    bcrypt.compare(candidatePassword, hash, function(err, isMatch) {
+      if(err) throw err;
+      callback(null, isMatch);
+    });
+  }

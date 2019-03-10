@@ -3,17 +3,13 @@ const Schema = mongoose.Schema
 
 const pointsModel = Schema({
    
-    id:{
-        type: Number,
-        required: 'Código de identificação obrigatório'
-    },
     name:{
         type: String,
-        required: true
+        required: false
     },
     points: {
         type: Number,
-        required: true
+        required: false
     }
 });
 
